@@ -9,6 +9,13 @@ import {UserOperation} from "@account-abstraction/contracts/interfaces/UserOpera
 // @title SmartAccount
 // @notice This a smart contract wallet following the specs of EIP4337, with social recovery
 contract SmartAccount is BaseAccount {
+    using ECDSA for bytes32;
+
+
+
+    // ==================================
+    // STATE VARIABLES
+    // ==================================
     IEntryPoint private immutable _entryPoint;
     address private _owner;
     uint256 private _socialRecoverCount;
@@ -34,6 +41,14 @@ contract SmartAccount is BaseAccount {
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
         // validate the signature of the user operation
+
+        address signer = ECDSA.recover(userOpHash.toEthSignedMessageHash(), userOp.signature);
+
+        if (signer != _owner) {
+            return SIG_VALIDATION_FAILED;
+        }
+
+        return 0;
     }
 
 
