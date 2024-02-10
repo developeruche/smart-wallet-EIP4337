@@ -1,6 +1,7 @@
 import {BaseAccount} from "@account-abstraction/contracts/core/BaseAccount.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import {UserOperation} from "@account-abstraction/contracts/interfaces/UserOperation.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 
 
@@ -40,8 +41,6 @@ contract SmartAccount is BaseAccount {
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        // validate the signature of the user operation
-
         address signer = ECDSA.recover(userOpHash.toEthSignedMessageHash(), userOp.signature);
 
         if (signer != _owner) {
